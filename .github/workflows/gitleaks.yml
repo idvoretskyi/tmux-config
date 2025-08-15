@@ -1,0 +1,36 @@
+name: Security / Gitleaks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run gitleaks (local fallback for act)
+        if: ${{ github.actor == 'nektos/act' }}
+        run: |
+          set -euo pipefail
+          GL_VERSION=8.18.2
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GL_VERSION}/gitleaks_${GL_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks version
+          ./gitleaks detect --source . --no-banner --redact --report-format sarif --report-path gitleaks.sarif
+      - name: Run gitleaks (GitHub)
+        if: ${{ github.actor != 'nektos/act' }}
+        uses: zricethezav/gitleaks-action@v2
+        with:
+          args: "detect --source . --no-banner --redact --report-format sarif --report-path gitleaks.sarif"
+      - name: Upload SARIF
+        if: ${{ github.actor != 'nektos/act' }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gitleaks.sarif

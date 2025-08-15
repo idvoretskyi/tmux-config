@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a bug in tmux-config
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide steps to reproduce the issue
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: tmux
+    attributes:
+      label: tmux version
+  - type: input
+    id: os
+    attributes:
+      label: OS and version
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs/outputs
+      render: shell

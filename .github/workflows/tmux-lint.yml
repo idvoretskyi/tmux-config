@@ -1,0 +1,31 @@
+name: CI / Tmux Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tmux and shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tmux shellcheck
+      - name: Validate tmux config
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Start a minimal session using our config; tmux exits non-zero on fatal config errors
+          tmux -f .tmux.conf -L test -vv new-session -d 'sleep 0.1'
+          tmux -L test kill-server || true
+          # Optional: confirm logs exist if produced (not required for success)
+          ls tmux-*.log tmux-client-*.log tmux-server-*.log >/dev/null 2>&1 || true
+      - name: Shellcheck tmux config
+        run: |
+          shellcheck -s sh .tmux.conf || true
+      - name: Cleanup tmux logs
+        run: rm -f tmux-*.log tmux-client-*.log || true
