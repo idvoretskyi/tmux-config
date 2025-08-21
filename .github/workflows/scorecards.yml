@@ -9,14 +9,14 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: read
-  security-events: write
-  id-token: write
+permissions: read-all
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
