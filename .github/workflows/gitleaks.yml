@@ -14,7 +14,7 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Run gitleaks (local fallback for act)
         if: ${{ github.actor == 'nektos/act' }}
         run: |
